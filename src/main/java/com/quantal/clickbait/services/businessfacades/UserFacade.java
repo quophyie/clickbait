@@ -1,6 +1,7 @@
 package com.quantal.clickbait.services.businessfacades;
 
 import com.quantal.clickbait.dto.ResponseDTO;
+import com.quantal.clickbait.dto.ResponseMessageDTO;
 import com.quantal.clickbait.dto.UserDTO;
 import com.quantal.clickbait.entities.User;
 import com.quantal.clickbait.services.workers.interfaces.UserService;
@@ -30,14 +31,12 @@ public class UserFacade extends AbstractBaseFacade{
     createUserData.setId(null);
     User createdUser = userService.add(createUserData);
     UserDTO createdUserDTO = mapper.map(createdUser, UserDTO.class);
-    // ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(createdUserDTO);
     return toRESTResponse(createdUserDTO, HttpStatus.OK,null);
   }
 
    public ResponseEntity<?> findUser(long id){
      User foundUser = userService.findById(id);
      UserDTO foundUserDTO = mapper.map(foundUser, UserDTO.class);
-    // ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(foundUserDTO);
      return toRESTResponse(foundUserDTO);
 
    }
@@ -46,5 +45,19 @@ public class UserFacade extends AbstractBaseFacade{
     List<User> foundUsers = userService.findAllUsers();
     List<UserDTO> foundUsersDTO =  mapper.mapAsList(foundUsers, UserDTO.class);
     return toRESTResponse(foundUsersDTO);
+  }
+
+  public ResponseEntity<?> updateUser(long userId, UserDTO updateDataDTO){
+
+    User user = mapper.map(updateDataDTO, User.class);
+    user.setId(userId);
+    User updatedUser = userService.update(user);
+    return toRESTResponse(updatedUser);
+  }
+
+  public ResponseEntity<?> deleteUser(long userId){
+
+     userService.deleteById(userId);
+    return toRESTResponse(new ResponseMessageDTO("User successfully deletes", 100));
   }
 }

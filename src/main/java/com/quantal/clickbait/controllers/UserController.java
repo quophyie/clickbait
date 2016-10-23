@@ -76,16 +76,34 @@ public class UserController {
   }
 
 
-  @PutMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> updateUser(@RequestParam("id") long userId, @RequestBody User updateData) {
+  @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> updateUser(@PathVariable("id") long userId, @RequestBody UserDTO updateData) {
 
+    /*
     HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
     User bUpdated = userService.update(updateData);
     ResponseMessageDTO response  = new ResponseMessageDTO();
     response.setMessage("OK");
     ResponseEntity<ResponseMessageDTO> res = new ResponseEntity<>(response, headers, HttpStatus.OK);
-    return res;
+    return res;*/
+
+    return userFacade.updateUser(userId, updateData);
+  }
+
+  @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> deleteUser(@PathVariable("id") long userId) {
+
+    /*
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
+    User bUpdated = userService.update(updateData);
+    ResponseMessageDTO response  = new ResponseMessageDTO();
+    response.setMessage("OK");
+    ResponseEntity<ResponseMessageDTO> res = new ResponseEntity<>(response, headers, HttpStatus.OK);
+    return res;*/
+
+    return userFacade.deleteUser(userId);
   }
 
 

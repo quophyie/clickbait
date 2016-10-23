@@ -39,6 +39,11 @@ public class DefaultUserService implements UserService {
 
   @Override
   public User update(User user) {
-    return (User)userRepository.updateById(user);
+    return (User)userRepository.update(user);
+  }
+
+  @Override
+  public void deleteById(long userId) {
+    userRepository.deleteById(userId);
   }
 }

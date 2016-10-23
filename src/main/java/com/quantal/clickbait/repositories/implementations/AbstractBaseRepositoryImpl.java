@@ -47,7 +47,7 @@ public abstract class AbstractBaseRepositoryImpl<TEntity, TKey> implements BaseR
 
   @Override
   @Transactional
-  public TEntity updateById(TEntity updateData) {
+  public TEntity update(TEntity updateData) {
    TEntity result =  em.merge(updateData);
 
     return result;

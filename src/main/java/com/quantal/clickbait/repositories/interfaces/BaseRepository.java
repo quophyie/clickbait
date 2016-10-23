@@ -9,6 +9,6 @@ public interface BaseRepository<TEntity, TKey> {
   TEntity create(TEntity createData);
   TEntity findSingle(TKey id);
   List<TEntity> findAll();
-  TEntity updateById(TEntity updateData);
+  TEntity update(TEntity updateData);
   void deleteById(TKey id);
 }
