@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class UserController {
   private UserFacade userFacade;
 
   @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> createUser(@RequestBody UserDTO user) {
+  public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO user) {
 
    /** HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
@@ -41,22 +42,25 @@ public class UserController {
 
   @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> findUser(@PathVariable("id") long userId) {
-
+    /*
     HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
     User user = userService.findById(userId);
-    ResponseEntity<User> res = new ResponseEntity<>(user, /*headers, */HttpStatus.OK);
+    ResponseEntity<User> res = new ResponseEntity<>(user, /*headers, * /HttpStatus.OK);
     return res;
+    */
+    return userFacade.findUser(userId);
   }
 
   @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> findAll() {
 
-    HttpHeaders headers = new HttpHeaders();
+    /*HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
     List<User> user = userService.findAllUsers();
-    ResponseEntity<List<User>> res = new ResponseEntity<>(user, /*headers, */HttpStatus.OK);
-    return res;
+    ResponseEntity<List<User>> res = new ResponseEntity<>(user, /*headers, * /HttpStatus.OK);
+    return res;*/
+    return userFacade.findAllUsers();
   }
 
   public UserController() {

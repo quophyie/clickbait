@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by dman on 23/10/2016.
  */
@@ -27,7 +30,21 @@ public class UserFacade extends AbstractBaseFacade{
     createUserData.setId(null);
     User createdUser = userService.add(createUserData);
     UserDTO createdUserDTO = mapper.map(createdUser, UserDTO.class);
-    ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(createdUserDTO);
-    return toRESTResponse(responseDTO, HttpStatus.OK,null);
+    // ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(createdUserDTO);
+    return toRESTResponse(createdUserDTO, HttpStatus.OK,null);
+  }
+
+   public ResponseEntity<?> findUser(long id){
+     User foundUser = userService.findById(id);
+     UserDTO foundUserDTO = mapper.map(foundUser, UserDTO.class);
+    // ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(foundUserDTO);
+     return toRESTResponse(foundUserDTO);
+
+   }
+
+  public ResponseEntity<?> findAllUsers(){
+    List<User> foundUsers = userService.findAllUsers();
+    List<UserDTO> foundUsersDTO =  mapper.mapAsList(foundUsers, UserDTO.class);
+    return toRESTResponse(foundUsersDTO);
   }
 }

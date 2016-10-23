@@ -1,5 +1,7 @@
 package com.quantal.clickbait.dto;
 
+import com.quantal.clickbait.validators.email.ValidEmail;
+import com.quantal.clickbait.validators.password.PasswordMatches;
 import com.quantal.clickbait.enums.Gender;
 
 import java.time.LocalDate;
@@ -7,11 +9,14 @@ import java.time.LocalDate;
 /**
  * Created by dman on 13/09/2016.
  */
+@PasswordMatches
 public class UserDTO {
 
   private long id;
+  @ValidEmail
   private String email;
   private String password;
+  private String confirmedPassword;
   private Gender gender;
   private String firstName;
   private String lastName;
@@ -51,6 +56,14 @@ public class UserDTO {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public String getConfirmedPassword() {
+    return confirmedPassword;
+  }
+
+  public void setConfirmedPassword(String confirmedPassword) {
+    this.confirmedPassword = confirmedPassword;
   }
 
   public Gender getGender() {
