@@ -58,6 +58,6 @@ public class UserFacade extends AbstractBaseFacade{
   public ResponseEntity<?> deleteUser(long userId){
 
      userService.deleteById(userId);
-    return toRESTResponse(new ResponseMessageDTO("User successfully deletes", 100));
+    return toRESTResponse(new ResponseMessageDTO("User successfully deleted", 100));
   }
 }

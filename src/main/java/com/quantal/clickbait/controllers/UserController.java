@@ -30,7 +30,7 @@ public class UserController {
   private UserFacade userFacade;
 
   @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO user) {
+  public ResponseEntity<?> createUser(@RequestBody UserDTO user) {
 
    /** HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
@@ -65,7 +65,8 @@ public class UserController {
 
   @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateUser(@PathVariable("id") long userId, @RequestBody UserDTO updateData) {
-    return userFacade.updateUser(userId, updateData);
+    ResponseEntity<?> res = userFacade.updateUser(userId, updateData);
+    return  res;
   }
 
   @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

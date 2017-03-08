@@ -1,5 +1,6 @@
 package com.quantal.clickbait.controllers;
 
+import com.quantal.clickbait.dto.LoginDTO;
 import com.quantal.clickbait.entities.User;
 import com.quantal.clickbait.services.businessfacades.LoginFacade;
 import com.quantal.clickbait.dto.ResponseDTO;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -28,15 +30,15 @@ public class LoginController {
   }
 
   @PostMapping(path="/", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> login(User user){
+  public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
 
-    HttpHeaders headers = new HttpHeaders();
+    /*HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_JSON_VALUE);
 
     ResponseDTO<UserDTO> resVm = loginFacade.loginUser(user.getEmail(), user.getPassword());;
 
-    ResponseEntity<ResponseDTO<UserDTO>> response = new ResponseEntity<>(resVm, headers, HttpStatus.OK);
+    ResponseEntity<ResponseDTO<UserDTO>> response = new ResponseEntity<>(resVm, headers, HttpStatus.OK);*/
 
-    return response;
+    return loginFacade.loginUser(loginDTO.getEmail(), loginDTO.getPassword());
   }
 }

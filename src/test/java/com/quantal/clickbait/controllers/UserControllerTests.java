@@ -1,7 +1,10 @@
 package com.quantal.clickbait.controllers;
 
+import com.quantal.clickbait.dto.ResponseDTO;
+import com.quantal.clickbait.dto.UserDTO;
 import com.quantal.clickbait.matchers.ClickbaitMatchers;
 import com.quantal.clickbait.entities.User;
+import com.quantal.clickbait.services.businessfacades.UserFacade;
 import com.quantal.clickbait.services.workers.interfaces.UserService;
 import com.quantal.clickbait.util.TestUtil;
 
@@ -15,7 +18,9 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +36,9 @@ public class UserControllerTests {
 
   @Mock
   private UserService userService;
+
+  @Mock
+  private UserFacade userFacade = new UserFacade(userService);
 
   @InjectMocks
   private UserController userController;
@@ -58,20 +66,25 @@ public class UserControllerTests {
 
   @Test
   public void whenGivenUserPostDataCreateNewUser() throws Exception {
-    User userToCreate = new User();
+    UserDTO userToCreate = new UserDTO();
     userToCreate.setFirstName(firstName);
     userToCreate.setLastName(lastName);
     userToCreate.setEmail(email);
     userToCreate.setPassword(password);
 
-    User  createdUser = new User();
+    UserDTO  createdUser = new UserDTO();
     createdUser.setId(userId);
     createdUser.setFirstName(firstName);
     createdUser.setLastName(lastName);
     createdUser.setEmail(email);
     createdUser.setPassword(password);
 
-    when(userService.add(Matchers.argThat(new ClickbaitMatchers.UserMatcher(userToCreate)))).thenReturn(createdUser);
+
+    ResponseEntity response = new ResponseEntity(new ResponseDTO<>("OK", 100, createdUser), HttpStatus.OK);
+    ClickbaitMatchers.UserDTOMatcher userMatcher = new ClickbaitMatchers.UserDTOMatcher(userToCreate);
+    when(userFacade.createUser(Matchers.argThat(userMatcher))).thenReturn(response);
+
+
 
     mockMvc.perform(post("/users/")
           .content(TestUtil.convertObjectToJsonString(userToCreate))
@@ -79,45 +92,55 @@ public class UserControllerTests {
         )
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-        .andExpect(jsonPath("$.firstName").value(firstName))
-        .andExpect(jsonPath("$.id").value((int)userId));
+        .andExpect(jsonPath("$.data.firstName").value(firstName))
+        .andExpect(jsonPath("$.data.id").value((int)userId));
 
-    verify(userService).add(Matchers.any(User.class));
+    verify(userFacade).createUser(Matchers.argThat(userMatcher));
   }
 
   @Test
   public void shouldReturnUserWhenGivenId() throws Exception{
-    User user = new User();
+
+    UserDTO user = new UserDTO();
     user.setId(userId);
     user.setFirstName(firstName);
     user.setLastName(lastName);
     user.setEmail(email);
     user.setPassword(password);
 
-    when(userService.findById(userId)).thenReturn(user);
+    ResponseEntity response = new ResponseEntity(new ResponseDTO<>("OK", 100, user), HttpStatus.OK);
 
-    mockMvc.perform(get("/users/").param("id", "1"))
+    when(userFacade.findUser(eq(userId))).thenReturn(response);
+
+    mockMvc.perform(get("/users/{id}",userId))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value((int)userId))
-        .andExpect(jsonPath("$.email").value(email));
-    verify(userService).findById(userId);
+        .andExpect(jsonPath("$.data.id").value((int)userId))
+        .andExpect(jsonPath("$.data.email").value(email));
+    verify(userFacade).findUser(eq(userId));
   }
 
   @Test
   public void shouldUpdateUserGivenUpdateData() throws Exception{
-    User  userUpdateData = new User();
+    UserDTO  userUpdateData = new UserDTO();
     userUpdateData.setId(userId);
     userUpdateData.setFirstName("Tom");
     userUpdateData.setLastName("Brexit");
     userUpdateData.setEmail(email);
     userUpdateData.setPassword(password);
 
-    mockMvc.perform(put("/users/")
-        .param("id", "1")
+    ClickbaitMatchers.UserDTOMatcher userDTOMatcher = new ClickbaitMatchers.UserDTOMatcher(userUpdateData);
+    ResponseEntity response = new ResponseEntity(new ResponseDTO<>("OK", 100, userUpdateData), HttpStatus.OK);
+
+    when(userFacade.updateUser(eq(userId), Matchers.argThat(userDTOMatcher)))
+        .thenReturn(response);
+    mockMvc.perform(put("/users/{id}", userId)
+        //.param("id", "1")
         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
         .content(TestUtil.convertObjectToJsonString(userUpdateData)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("OK"));
+
+    verify(userFacade).updateUser(eq(userId), Matchers.argThat(userDTOMatcher));
   }
 
   @After()

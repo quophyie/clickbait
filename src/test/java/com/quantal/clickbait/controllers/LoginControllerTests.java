@@ -1,5 +1,7 @@
 package com.quantal.clickbait.controllers;
 
+import com.quantal.clickbait.dto.LoginDTO;
+import com.quantal.clickbait.dto.ResponseDTO;
 import com.quantal.clickbait.entities.User;
 import com.quantal.clickbait.services.businessfacades.LoginFacade;
 import com.quantal.clickbait.services.workers.interfaces.LoginService;
@@ -10,10 +12,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,6 +36,7 @@ public class LoginControllerTests {
   @Mock
   private LoginService loginService;
   //@InjectMocks
+  @Mock
   private LoginFacade loginFacade;
   @InjectMocks
   private LoginController loginController;
@@ -42,17 +49,17 @@ public class LoginControllerTests {
   private String firstName;
   private String lastName;
 
-  private User user;
+  private LoginDTO loginDTO;
 
   @Before()
   public void setUp(){
-    loginFacade = new LoginFacade(loginService);
-    loginController = new LoginController(loginFacade) ;
+    //loginFacade = new LoginFacade(loginService);
+    //loginController = new LoginController(loginFacade) ;
     mockMvc = standaloneSetup(loginController)
         .setMessageConverters(new MappingJackson2HttpMessageConverter())
         .build();
 
-    user = new User();
+    loginDTO = new LoginDTO();
     userId = 1;
     password = "password";
     email = "email@quanta.com";
@@ -62,13 +69,15 @@ public class LoginControllerTests {
 
   @Test
   public void shouldReturnUserGivenCorrectUsernameAndPassword() throws Exception {
-
-    user.setEmail(email);
-    user.setPassword(password);
-
+    String loginSuccessMsg = "Login Successful";
+    loginDTO.setEmail(email);
+    loginDTO.setPassword(password);
+    when(loginFacade.loginUser(email, password)).thenReturn(new ResponseEntity(new ResponseDTO(loginSuccessMsg, 100,loginDTO), HttpStatus.OK));
     mockMvc.perform(post("/login/").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-        .content(TestUtil.convertObjectToJsonString(user)))
+        .content(TestUtil.convertObjectToJsonString(loginDTO)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.message").value("OK"));
+        .andExpect(jsonPath("$.message").value(loginSuccessMsg));
+
+    verify(loginFacade).loginUser(email, password);
   }
 }
